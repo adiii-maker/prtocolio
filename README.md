@@ -173,6 +173,100 @@
             font-size: 0.9rem;
         }
 
+        /* ==================== Social Login Buttons ==================== */
+
+        .social-login-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 1.5rem 0;
+        }
+
+        .btn-social {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+        }
+
+        .btn-social:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-google {
+            border-color: #db4437;
+            background: #fff;
+        }
+
+        .btn-google:hover {
+            background: #f9f9f9;
+            border-color: #c5221f;
+        }
+
+        .btn-google i {
+            color: #db4437;
+            font-size: 1.1rem;
+        }
+
+        .btn-facebook {
+            border-color: #1877f2;
+            background: #fff;
+        }
+
+        .btn-facebook:hover {
+            background: #f0f2f5;
+            border-color: #0a66c2;
+        }
+
+        .btn-facebook i {
+            color: #1877f2;
+            font-size: 1.1rem;
+        }
+
+        .btn-x {
+            border-color: #000;
+            background: #fff;
+        }
+
+        .btn-x:hover {
+            background: #f7f7f7;
+            border-color: #000;
+        }
+
+        .btn-x i {
+            color: #000;
+            font-size: 1.1rem;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 1rem 0;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+
         /* ==================== Hero Section ==================== */
 
         .hero {
@@ -531,11 +625,14 @@
             max-width: 500px;
             width: 95%;
             z-index: 2000;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .auth-modal h3 {
             margin-bottom: 1.5rem;
             color: #333;
+            text-align: center;
         }
 
         .auth-tabs {
@@ -681,6 +778,11 @@
 
             .pricing-card.featured {
                 transform: scale(1);
+            }
+
+            .auth-modal {
+                max-width: 95%;
+                width: 100%;
             }
         }
 
@@ -916,6 +1018,20 @@
 
             <!-- Login Form -->
             <div id="login-form" class="auth-form active">
+                <div class="social-login-container">
+                    <button class="btn-social btn-google" onclick="handleSocialLogin('google')">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                    <button class="btn-social btn-facebook" onclick="handleSocialLogin('facebook')">
+                        <i class="fab fa-facebook"></i> Continue with Facebook
+                    </button>
+                    <button class="btn-social btn-x" onclick="handleSocialLogin('x')">
+                        <i class="fab fa-x-twitter"></i> Continue with X
+                    </button>
+                </div>
+
+                <div class="divider">Or</div>
+
                 <div class="form-group">
                     <label>Email Address</label>
                     <input type="email" id="loginEmail" placeholder="your@email.com">
@@ -934,6 +1050,20 @@
 
             <!-- Sign Up Form -->
             <div id="signup-form" class="auth-form">
+                <div class="social-login-container">
+                    <button class="btn-social btn-google" onclick="handleSocialLogin('google')">
+                        <i class="fab fa-google"></i> Sign up with Google
+                    </button>
+                    <button class="btn-social btn-facebook" onclick="handleSocialLogin('facebook')">
+                        <i class="fab fa-facebook"></i> Sign up with Facebook
+                    </button>
+                    <button class="btn-social btn-x" onclick="handleSocialLogin('x')">
+                        <i class="fab fa-x-twitter"></i> Sign up with X
+                    </button>
+                </div>
+
+                <div class="divider">Or</div>
+
                 <div class="form-group">
                     <label>Full Name</label>
                     <input type="text" id="signupName" placeholder="John Doe">
@@ -1122,6 +1252,52 @@
         function validateEmail(email) {
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(email);
+        }
+
+        // ==================== Social Login Handler ====================
+
+        function handleSocialLogin(provider) {
+            // In a real application, you would integrate with OAuth providers
+            // This is a demo implementation
+            
+            const socialProviders = {
+                google: {
+                    name: 'Google',
+                    icon: 'fab fa-google',
+                    color: '#db4437'
+                },
+                facebook: {
+                    name: 'Facebook',
+                    icon: 'fab fa-facebook',
+                    color: '#1877f2'
+                },
+                x: {
+                    name: 'X',
+                    icon: 'fab fa-x-twitter',
+                    color: '#000'
+                }
+            };
+
+            const providerInfo = socialProviders[provider];
+            
+            // Generate a demo user from social login
+            const socialEmail = `user_${Date.now()}@${provider}.social`;
+            const socialName = `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`;
+            
+            currentUser = {
+                id: Date.now(),
+                name: socialName,
+                email: socialEmail,
+                provider: provider,
+                createdAt: new Date().toISOString()
+            };
+
+            localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+            
+            closeAuthModal();
+            updateNavbar();
+            showToast(`Successfully logged in with ${providerInfo.name}!`, 'success');
+            redirectToBuilder();
         }
 
         function handleLogin() {
@@ -1442,7 +1618,7 @@
             });
         }
 
-        // ==================== Toast ==================== 
+        // ===== Toast ========
 
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
